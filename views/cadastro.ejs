@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Cadastro</h1>
+  <form id="cadastroForm" action="/cadastro" method="POST">
+    <label for="name">Nome:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="cep">CEP:</label><br>
+    <input type="text" id="cep" name="cep" required><br><br>
+
+    <!-- Campos do endereço que serão preenchidos automaticamente -->
+    <label for="street">Rua:</label><br>
+    <input type="text" id="street" name="street" readonly><br><br>
+
+    <label for="neighborhood">Bairro:</label><br>
+    <input type="text" id="neighborhood" name="neighborhood" readonly><br><br>
+
+    <label for="city">Cidade:</label><br>
+    <input type="text" id="city" name="city" readonly><br><br>
+
+    <label for="state">Estado:</label><br>
+    <input type="text" id="state" name="state" readonly><br><br>
+
+    <label for="number">Número:</label><br>
+    <input type="text" id="number" name="number"><br><br>
+
+    <label for="password">Senha:</label><br>
+    <input type="password" id="password" name="password" required minlength="6"><br><br>
+
+    <label for="confirmPassword">Confirmar Senha:</label><br>
+    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6"><br><br>
+    
+    <input type="submit" value="Cadastrar">
+  </form>
+  <p>Já tem uma conta? <a href="/">Faça Login</a></p>
+
+  <script>
+    const form = document.getElementById('cadastroForm');
+    const cepInput = document.getElementById('cep');
+    const streetInput = document.getElementById('street');
+    const neighborhoodInput = document.getElementById('neighborhood');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const numberInput = document.getElementById('number');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    cepInput.addEventListener('blur', () => {
+      const cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+      if (cep.length !== 8) {
+        cepInput.classList.add('error');
+        alert('CEP inválido. Por favor, insira um CEP válido.');
+        return;
+      } else {
+        cepInput.classList.remove('error');
+      }
+
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.erro) {
+            alert('CEP não encontrado. Por favor, verifique o CEP e tente novamente.');
+            return;
+          }
+
+          streetInput.value = data.logradouro || '';
+          neighborhoodInput.value = data.bairro || '';
+          cityInput.value = data.localidade || '';
+          stateInput.value = data.uf || '';
+        })
+        .catch(error => {
+          console.error('Erro ao buscar endereço:', error);
+          alert('Erro ao buscar endereço. Por favor, tente novamente mais tarde.');
+        });
+    });
+
+    form.addEventListener('submit', (event) => {
+      let hasError = false;
+
+      // Validação da senha
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      if (password !== confirmPassword) {
+        confirmPasswordInput.classList.add('error');
+        hasError = true;
+      } else {
+        confirmPasswordInput.classList.remove('error');
+      }
+
+      // Validação de campos obrigatórios
+      const requiredFields = ['name', 'email', 'cep', 'number'];
+      requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+          input.classList.add('error');
+          hasError = true;
+        } else {
+          input.classList.remove('error');
+        }
+      });
+
+      if (hasError) {
+        alert('Por favor, corrija os campos destacados em vermelho.');
+        event.preventDefault(); // Impede o envio do formulário
+      }
+    });
+  </script>
+</body>
+</html>
