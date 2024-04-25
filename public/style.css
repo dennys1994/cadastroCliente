@@ -53,3 +53,12 @@ body {
   form .error {
     border: 1px solid red;
 }
+
+.error-message {
+  color: red;
+}
+
+.login-link {
+  color: blue;
+  text-decoration: underline;
+}

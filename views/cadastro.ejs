@@ -7,6 +7,12 @@
 </head>
 <body>
   <h1>Cadastro</h1>
+
+  <% if (error) { %>
+    <div style="color: red;"><%= error %></div>
+    <a href="/login">Ir para a tela de login</a>
+  <% } else { %>
+
   <form id="cadastroForm" action="/cadastro" method="POST">
     <label for="name">Nome:</label><br>
     <input type="text" id="name" name="name" required><br><br>
@@ -41,6 +47,10 @@
     
     <input type="submit" value="Cadastrar">
   </form>
+
+  <!-- Fim do formulário de cadastro -->
+  <% } %>
+
   <p>Já tem uma conta? <a href="/">Faça Login</a></p>
 
   <script>
